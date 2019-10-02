@@ -1,0 +1,22 @@
+{
+  "name": "bamazon",
+  "version": "1.0.0",
+  "description": "I am creating an Amazon-like storefront with the MySQL skills. The app will take in orders from customers and deplete stock from the store's inventory. I will program my app to track product sales across the store's departments and provide a summary of the highest-grossing departments in the store.",
+  "main": "bamazonCustomer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dlopez079/bamazon.git"
+  },
+  "author": "David Lopez",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dlopez079/bamazon/issues"
+  },
+  "homepage": "https://github.com/dlopez079/bamazon#readme",
+  "dependencies": {
+    "inquirer": "^7.0.0"
+  }
+}
