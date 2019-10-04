@@ -54,16 +54,31 @@ function promptCustomerForItem() {
       connection.query(query, { item_id: answer.item_id }, function (err, res) {
         if (err) throw err;
 
+        var selectedProduct = res[0].product_name;
         //Display the item that the user has selected to purchase.
-        console.log(`The item that you selected to purchse is ${res[0].product_name} for $${res[0].price}.`);
-        connection.end();
+        console.log(`Item Selected: ${res[0].product_name} for $${res[0].price}.\n`);
+
+       
+        promptCustomerForQuantity();
       });
     })
 }
 // //prompt customer for quantity
-// function promptCustomerForQuantity() {
+function promptCustomerForQuantity() {
+  inquirer
+    .prompt({
+      name: "quantity",
+      type: "number",
+      message: "How many would you like to purchase?"
+    })
+    .then(function (answer) {
 
-// }
+      //Display to the user the quantity that they selected.
+      console.log(`Quantity Selected: ${answer.quantity} \nPlease be patient as we check inventory for product.\n`);
+    });
+    
+    connection.end();
+}
 
 // //Purhase function to buy desire item
 // function makePurchase() {
@@ -72,10 +87,14 @@ function promptCustomerForItem() {
 
 // //Check inventory to see if the user choice exist.
 // function checkInventory() {
-
+// 	if (quantityRequested <= stock_quantity) {
+// 		makePurchase();
+// 		} else {
+// 		console.log(`Unfortunately we only have ${stock_quantity} in stock.);
 // }
 
 // //Check to see if the user want to exit.
 // function exit() {
-
+//    console.log(`Thank you for shopping with us.  Please visit us again!`);
+//    connection.end();
 // }
