@@ -34,32 +34,48 @@ function readProducts() {
     // Log all results of the SELECT statement
     console.table(res);
 
-    // promptCustomerForItem();
+    promptCustomerForItem();
   });
 }
 
 
 //Prompt the customer for Product ID
 function promptCustomerForItem() {
+  inquirer
+    .prompt({
+      name: "item_id",
+      type: "number",
+      message: "From the table above, please enter the item id of the product you wish to purchase."
+    })
+    .then(function (answer) {
+      var query = "SELECT * FROM products WHERE ?"; //create a variable to hold the SELECT statement
 
+      //Query through the table to find the item_id that the customer would like to purchase.
+      connection.query(query, { item_id: answer.item_id }, function (err, res) {
+        if (err) throw err;
+
+        //Display the item that the user has selected to purchase.
+        console.log(`The item that you selected to purchse is ${res[0].product_name} for $${res[0].price}.`);
+        connection.end();
+      });
+    })
 }
+// //prompt customer for quantity
+// function promptCustomerForQuantity() {
 
-//prompt customer for quantity
-function promptCustomerForQuantity() {
+// }
 
-}
+// //Purhase function to buy desire item
+// function makePurchase() {
 
-//Purhase function to buy desire item
-function makePurchase() {
+// }
 
-}
+// //Check inventory to see if the user choice exist.
+// function checkInventory() {
 
-//Check inventory to see if the user choice exist.
-function checkInventory() {
+// }
 
-}
+// //Check to see if the user want to exit.
+// function exit() {
 
-//Check to see if the user want to exit.
-function exit() {
-  
-}
+// }
