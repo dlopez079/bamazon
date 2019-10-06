@@ -1,0 +1,57 @@
+1. created Javascript files
+	bamazonCustomer.js
+	bamazonManager.js
+	bamazonSupervisor.js
+
+2. npm init
+
+3. Install NPM packages. 
+	a. npm i inquirergit 
+	b. npm i mysql
+
+4. Designed table in VSCode and saved it bamazon.sql.  Executed script in DBeaver and create table. 
+
+5. In bamazonCustomer.js, create the connection to the sql database
+
+6. 
+
+cli_tabl
+
+Psuedo Code
+
+node bamazon
+display items
+
+prompt user for ID
+
+prompt user to enter quantity 
+
+check order
+
+If there is not enough items > log an error message. 
+If there is enough items > show the total costof that item / update the quantity of the time
+
+done 
+restart
+****exit function
+
+
+module.export {
+function myfunction {
+}
+};
+
+
+
+
+
+
+
+
+//Check inventory to see if the user choice exist.
+// function checkInventory() {
+// 	if (quantityRequested <= stock_quantity) {
+// 		makePurchase();
+// 		} else {
+// 		console.log(`Unfortunately we only have ${stock_quantity} in stock.);
+// }
