@@ -73,16 +73,11 @@ function promptCustomerForItem() {
       connection.query(query, { item_id: answer.item_id }, function (err, res) {
         if (err) throw err;
 
-        //Display the item that the user has selected to purchase.
         productId = res[0].item_id;
         productSelected = res[0].product_name;
-        priceOfProductSelected = res[0].price;
+        priceOfProductSelected = res[0].price.toFixed(2);
         departmentOfProductSelected = res[0].department_name;
-
-        //Variable to hold the stockQuantity of item selected.
         stockQuantityOfItemSelected = res[0].stock_quantity;
-        
-        console.log(`Item Selected: ${productSelected} from ${departmentOfProductSelected} department. The price is $${priceOfProductSelected}.  We have ${stockQuantityOfItemSelected} on hand.\n`);
 
         //After the customer has selected his item, requested a quantity from him. 
         promptCustomerForQuantity();
@@ -103,9 +98,7 @@ function promptCustomerForQuantity() {
     .then(function (answer) {
       //variable that will capture answer.quantity.
       quantityRequested = parseInt(answer.quantity);
-      //Display to the user the quantity that they selected.
-      console.log(`Quantity Selected: ${quantityRequested} \nPlease be patient as we check inventory for product.`);
-      console.log(`****************************`)
+
       //Check inventory to see if you have the amount requested in stock.  
       checkInventory();
     });
@@ -120,16 +113,11 @@ function checkInventory() {
   connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
 
-
-
-
-    console.log(`Stock On Hand: ${stockQuantityOfItemSelected}\nQuantity Requested: ${quantityRequested}`);
-
     if (quantityRequested <= stockQuantityOfItemSelected) {
-      console.log("The quantity that you selected can be honored!")
+      // console.log("The quantity that you selected can be honored!")
       makePurchase();
     } else {
-      console.log(`Unfortunately we only have ${stockQuantityOfItemSelected} in stock.\nWould you like to take the ${stockQuantityOfItemSelected} that we have in stock?`);
+      console.log(`Unfortunately we only have ${stockQuantityOfItemSelected} in stock.\nWould you like to take the ${stockQuantityOfItemSelected} that we have in stock?\n`);
       //INSERT INQUIRER PROMPT
     }
 
@@ -138,52 +126,82 @@ function checkInventory() {
 
 // //CREATE THE PURCHASE FUNCTION FOR DESIRED ITEM.
 function makePurchase() {
+  console.log("");
+  console.log("");
   console.log(`****************************`);
-  console.log(`Sale Summary`);
+  console.log(`SALE SUMMARY`);
   console.log(`----------------------------`);
   console.log(`Product: ${productSelected}`);
   console.log(`Quantity: ${quantityRequested}`);
   console.log(`Department: ${departmentOfProductSelected}`);
-  console.log(`Price: ${priceOfProductSelected}`);
+  console.log(`Price: $${priceOfProductSelected}`);
 
-  var totalPrice = parseInt(quantityRequested * priceOfProductSelected);
+  var totalPrice = parseInt(quantityRequested * priceOfProductSelected).toFixed(2);
   console.log(`Total Price: $${totalPrice}`);
-  console.log(`----------------------------`);
-  console.log(`Thank you for shopping with Bamazon!`);
-
-  updateInventory();
-
+  confirmPurchase();
 }
 
 
 
 function updateInventory() {
-  // if (productSelected) {
-  //   let newStockQuantity = stockQuantityOfItemSelected - quantityRequested;
-  //   console.log(`New Stock Quantity: ${newStockQuantity}`);
 
   var query = "UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?";
 
   //Query through the table to find the item_id that the customer would like to purchase.
   connection.query(query, [quantityRequested, productId], function (err, res) {
     if (err) throw err;
-    console.log(`Inventory Updated!`);
-    
+    // console.log(`Inventory Updated!`);
 
-    readProducts();
   });
 
 }
 
-  // connection.end();
-  // //Check to see if the user want to exit.
-  // function exit() {
-  //   console.log(`Thank you for shopping with us.  Please visit us again!`);
-  //   connection.end();
-  // }
 
-// //END OF PURCHASE FUNCTION***********************
+//Check to see if the user want to exit.
+function confirmPurchase() {
+  inquirer
+    .prompt({
+      name: "confirm",
+      type: "list",
+      message: "Would you like to confirm purchase?",
+      choices: ["Yes", "No"]
+    })
+    .then (function (answer) {
+      
+      if (answer.confirm === "Yes") {
+        console.log(`----------------------------`);
+        console.log(`----------------------------`);
+        console.log(`Your purchase is confirmed.  Your package will be shipped with the preferred shipping method on file.`)
+        console.log(`Thank you for shopping with Bamazon!`);
+        console.log(`----------------------------`);
+        console.log(`----------------------------`);
+        console.log("");
+        updateInventory();
+        shopOrExit();
+      } else {
+        console.log(`We are sorry that you didn't like any of the products.  We hope you come again! :-)`)
+        shopOrExit();
+      }
+      // Use user feedback for... whatever!!
+    });
+}
 
-
-
+//Check to see if the user want to exit.
+function shopOrExit() {
+  inquirer
+    .prompt({
+      name: "shopOrExit",
+      type: "list",
+      message: "Would you like to continue shopping?",
+      choices: ["Yes", "No"]
+    })
+    .then (function (answer) {
+      if (answer.shopOrExit === "Yes") {
+        readProducts();
+      } else {
+        connection.end();
+      }
+      // Use user feedback for... whatever!!
+    });
+}
 
