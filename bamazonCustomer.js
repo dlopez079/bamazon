@@ -63,7 +63,6 @@ var stockQuantityOfItemSelected;
 //END OF GLOBAL VARIABLES*****************************************
 
 
-//ESTABLISH A FUNCTION FOR THE ENTIRE
 //PROMPT THE CUSTOMER FOR PRODUCT ID*******************************
 function promptCustomerForItem() {
   inquirer
