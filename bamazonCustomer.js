@@ -28,7 +28,14 @@ connection.connect(function (err) {
 
 //DISPLAY ALL ITEMS FOR SALE*****************  
 function readProducts() {
-  console.log("Selecting all products...\n");
+  console.log("                                                                                                                      ");
+  console.log("**********************************************************************************************************************");
+  console.log("                                                                                                                      ");
+  console.log("                                                Welcome to Bamazon!!!                                                 ");
+  console.log("                                     Please choose from the product listed below!                                     ");
+  console.log("                                                                                                                      ");
+  console.log("**********************************************************************************************************************");
+  console.log("                                                                                                                      ");
   connection.query("SELECT * FROM products", function (err, res) {
     if (err) throw err;
     // Log all results of the SELECT statement
@@ -43,11 +50,12 @@ function readProducts() {
 //GLOBAL VARIABLES***************************
 
 //END OF GLOBAL VARIABLES********************
+var productId;
 var productSelected;
 var priceOfProductSelected;
 var departmentOfProductSelected;
 var quantityRequested;
-var stockQuantityOfItemSelected
+var stockQuantityOfItemSelected;
 
 //ESTABLISH A FUNCTION FOR THE ENTIRE
 //PROMPT THE CUSTOMER FOR PRODUCT ID*********
@@ -66,10 +74,15 @@ function promptCustomerForItem() {
         if (err) throw err;
 
         //Display the item that the user has selected to purchase.
+        productId = res[0].item_id;
         productSelected = res[0].product_name;
         priceOfProductSelected = res[0].price;
         departmentOfProductSelected = res[0].department_name;
-        console.log(`Item Selected: ${productSelected} from ${departmentOfProductSelected} department. Price $${priceOfProductSelected}.\n`);
+
+        //Variable to hold the stockQuantity of item selected.
+        stockQuantityOfItemSelected = res[0].stock_quantity;
+        
+        console.log(`Item Selected: ${productSelected} from ${departmentOfProductSelected} department. The price is $${priceOfProductSelected}.  We have ${stockQuantityOfItemSelected} on hand.\n`);
 
         //After the customer has selected his item, requested a quantity from him. 
         promptCustomerForQuantity();
@@ -97,10 +110,31 @@ function promptCustomerForQuantity() {
       checkInventory();
     });
 
-  // checkInventory();
-
 };
 //END OF PROMPTCUSTOMERFORQUANTITY FUNCTION**
+
+
+//Check inventory against the quantity that the user is requesting.
+function checkInventory() {
+  //Check through table for data
+  connection.query("SELECT * FROM products", function (err, res) {
+    if (err) throw err;
+
+
+
+
+    console.log(`Stock On Hand: ${stockQuantityOfItemSelected}\nQuantity Requested: ${quantityRequested}`);
+
+    if (quantityRequested <= stockQuantityOfItemSelected) {
+      console.log("The quantity that you selected can be honored!")
+      makePurchase();
+    } else {
+      console.log(`Unfortunately we only have ${stockQuantityOfItemSelected} in stock.\nWould you like to take the ${stockQuantityOfItemSelected} that we have in stock?`);
+      //INSERT INQUIRER PROMPT
+    }
+
+  });
+};
 
 // //CREATE THE PURCHASE FUNCTION FOR DESIRED ITEM.
 function makePurchase() {
@@ -111,51 +145,45 @@ function makePurchase() {
   console.log(`Quantity: ${quantityRequested}`);
   console.log(`Department: ${departmentOfProductSelected}`);
   console.log(`Price: ${priceOfProductSelected}`);
-  
+
   var totalPrice = parseInt(quantityRequested * priceOfProductSelected);
   console.log(`Total Price: $${totalPrice}`);
   console.log(`----------------------------`);
-  console.log(`Thank you for your purchase!`);
-  
-  function updateInventory() {
-    if (productSelected) {
-      let newStockQuantity = stockQuantityOfItemSelected - quantityRequested;
-      console.log(`New Stock Quantity: ${newStockQuantity}`);
-    }
-  }
+  console.log(`Thank you for shopping with Bamazon!`);
 
   updateInventory();
-  connection.end();
-  
-};
-// //END OF PURCHASE FUNCTION***********************
+
+}
 
 
 
-//Check inventory against the quantity that the user is requesting.
-function checkInventory() {
-  //Check through table for data
-  connection.query("SELECT * FROM products", function (err, res) {
+function updateInventory() {
+  // if (productSelected) {
+  //   let newStockQuantity = stockQuantityOfItemSelected - quantityRequested;
+  //   console.log(`New Stock Quantity: ${newStockQuantity}`);
+
+  var query = "UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?";
+
+  //Query through the table to find the item_id that the customer would like to purchase.
+  connection.query(query, [quantityRequested, productId], function (err, res) {
     if (err) throw err;
-
-
-    //Variable to hold the stockQuantity of item selected.
-    stockQuantityOfItemSelected = res[0].stock_quantity;
+    console.log(`Inventory Updated!`);
     
-    console.log(`Stock On Hand: ${stockQuantityOfItemSelected}\nQuantity Requested: ${quantityRequested}`);
 
-    if (quantityRequested <= stockQuantityOfItemSelected) {
-      console.log("The quantity that you selected can be honored!")
-      makePurchase();
-    } else {
-      console.log(`Unfortunately we only have ${stockQuantityOfItemSelected} in stock.\nWould you like to take the ${stockQuantityOfItemSelected} that we have in stock?`);
-      //INSERT INQUIRER PROMPT
-    }
-   
+    readProducts();
   });
+
+}
+
+  // connection.end();
   // //Check to see if the user want to exit.
   // function exit() {
   //   console.log(`Thank you for shopping with us.  Please visit us again!`);
   //   connection.end();
   // }
-};
+
+// //END OF PURCHASE FUNCTION***********************
+
+
+
+
