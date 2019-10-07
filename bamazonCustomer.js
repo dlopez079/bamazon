@@ -2,7 +2,8 @@
 var inquirer = require("inquirer");
 var mysql = require("mysql");
 
-//CREATED CONNECTION TO SQL DATABASE********
+
+//CREATED CONNECTION TO SQL DATABASE******************************
 var connection = mysql.createConnection({
   host: "localhost",
 
@@ -16,7 +17,10 @@ var connection = mysql.createConnection({
   password: "root",
   database: "bamazon_db"
 });
-//END OF CONNECTION TO SQL******************
+//END OF CONNECTION TO SQL****************************************
+
+
+//CONNECTION FUNCTION*********************************************
 connection.connect(function (err) {
   if (err) {
     console.log("error connect" + err.stack);
@@ -25,8 +29,10 @@ connection.connect(function (err) {
 
   readProducts();
 });
+//END OF CONNECTION FUNCTION**************************************
 
-//DISPLAY ALL ITEMS FOR SALE*****************  
+
+//DISPLAY ALL ITEMS FOR SALE**************************************  
 function readProducts() {
   console.log("                                                                                                                      ");
   console.log("**********************************************************************************************************************");
@@ -44,18 +50,18 @@ function readProducts() {
     promptCustomerForItem();
   });
 };
-//END OF READPRODUCTS FUNCTION***************
+//END OF READPRODUCTS FUNCTION************************************
 
 
-//GLOBAL VARIABLES***************************
-
-//END OF GLOBAL VARIABLES********************
+//GLOBAL VARIABLES************************************************
 var productId;
 var productSelected;
 var priceOfProductSelected;
 var departmentOfProductSelected;
 var quantityRequested;
 var stockQuantityOfItemSelected;
+//END OF GLOBAL VARIABLES*****************************************
+
 
 //ESTABLISH A FUNCTION FOR THE ENTIRE
 //PROMPT THE CUSTOMER FOR PRODUCT ID*******************************
