@@ -58,7 +58,7 @@ var quantityRequested;
 var stockQuantityOfItemSelected;
 
 //ESTABLISH A FUNCTION FOR THE ENTIRE
-//PROMPT THE CUSTOMER FOR PRODUCT ID*********
+//PROMPT THE CUSTOMER FOR PRODUCT ID*******************************
 function promptCustomerForItem() {
   inquirer
     .prompt({
@@ -68,26 +68,32 @@ function promptCustomerForItem() {
     })
     .then(function (answer) {
       var query = "SELECT * FROM products WHERE ?"; //create a variable to hold the SELECT statement
+      if (answer.item_id > 13) {
+        console.log(`\nYou selected an item that is not on the table.  Please select an item from the table above\n.`)
+        promptCustomerForItem();
+      } else {
+        //Query through the table to find the item_id that the customer would like to purchase.
+        connection.query(query, { item_id: answer.item_id }, function (err, res) {
+          if (err) throw err;
 
-      //Query through the table to find the item_id that the customer would like to purchase.
-      connection.query(query, { item_id: answer.item_id }, function (err, res) {
-        if (err) throw err;
+          productId = res[0].item_id;
+          productSelected = res[0].product_name;
+          priceOfProductSelected = res[0].price.toFixed(2);
+          departmentOfProductSelected = res[0].department_name;
+          stockQuantityOfItemSelected = res[0].stock_quantity;
 
-        productId = res[0].item_id;
-        productSelected = res[0].product_name;
-        priceOfProductSelected = res[0].price.toFixed(2);
-        departmentOfProductSelected = res[0].department_name;
-        stockQuantityOfItemSelected = res[0].stock_quantity;
 
-        //After the customer has selected his item, requested a quantity from him. 
-        promptCustomerForQuantity();
-      });
+          //After the customer has selected his item, requested a quantity from him. 
+          promptCustomerForQuantity();
+        });
+      }
+
     })
 };
-//END OF PROMPTCUSTOMERFORITEM FUNCTION******
+//END OF PROMPTCUSTOMERFORITEM FUNCTION****************************
 
 
-// PROMPT CUSTOMER FOR QUANTITY**************
+// PROMPT CUSTOMER FOR QUANTITY************************************
 function promptCustomerForQuantity() {
   inquirer
     .prompt({
@@ -104,10 +110,10 @@ function promptCustomerForQuantity() {
     });
 
 };
-//END OF PROMPTCUSTOMERFORQUANTITY FUNCTION**
+//END OF PROMPTCUSTOMERFORQUANTITY FUNCTION************************
 
 
-//Check inventory against the quantity that the user is requesting.
+//CHECK TO MAKE SURE THERE IS ENOUGH INVENTORY*********************
 function checkInventory() {
   //Check through table for data
   connection.query("SELECT * FROM products", function (err, res) {
@@ -117,14 +123,33 @@ function checkInventory() {
       // console.log("The quantity that you selected can be honored!")
       makePurchase();
     } else {
-      console.log(`Unfortunately we only have ${stockQuantityOfItemSelected} in stock.\nWould you like to take the ${stockQuantityOfItemSelected} that we have in stock?\n`);
+      console.log(`\n*****Unfortunately we only have ${stockQuantityOfItemSelected} in stock.*****\n`);
       //INSERT INQUIRER PROMPT
+      inquirer
+        .prompt({
+          name: "remainingStock",
+          type: "list",
+          message: "Would you like to purchase the remaining inventory?",
+          choices: ["Yes", "No"]
+        })
+        .then(function (answer) {
+          if (answer.remainingStock === "Yes") {
+            console.log("");
+            console.log("Please view the table for the stock quantity and select available stock.");
+            console.log("");
+            readProducts();
+          } else {
+            shopOrExit();
+          }
+          // Use user feedback for... whatever!!
+        });
     }
 
   });
 };
+//END OF CHECK INVENTORY FUNCTION**********************************
 
-// //CREATE THE PURCHASE FUNCTION FOR DESIRED ITEM.
+// //CREATE THE PURCHASE FUNCTION FOR DESIRED ITEM.****************
 function makePurchase() {
   console.log("");
   console.log("");
@@ -139,10 +164,10 @@ function makePurchase() {
   var totalPrice = parseInt(quantityRequested * priceOfProductSelected).toFixed(2);
   console.log(`Total Price: $${totalPrice}`);
   confirmPurchase();
-}
+};
+//END OF THE MAKE PURCHASE FUNCTION********************************
 
-
-
+//CREATE THE UPDATE INVENTORY FUNCTION ****************************
 function updateInventory() {
 
   var query = "UPDATE products SET stock_quantity = stock_quantity - ? WHERE item_id = ?";
@@ -154,10 +179,11 @@ function updateInventory() {
 
   });
 
-}
+};
+//END OF UPDATE INVENTORY FUNCTION*********************************
 
 
-//Check to see if the user want to exit.
+//HAVE USER CONFIRM PURCHASE***************************************
 function confirmPurchase() {
   inquirer
     .prompt({
@@ -166,8 +192,8 @@ function confirmPurchase() {
       message: "Would you like to confirm purchase?",
       choices: ["Yes", "No"]
     })
-    .then (function (answer) {
-      
+    .then(function (answer) {
+
       if (answer.confirm === "Yes") {
         console.log(`----------------------------`);
         console.log(`----------------------------`);
@@ -185,8 +211,10 @@ function confirmPurchase() {
       // Use user feedback for... whatever!!
     });
 }
+// END OF CONFIRM PURCHASE FUNCTION********************************
 
-//Check to see if the user want to exit.
+
+//CHECK IF USER WANTS TO CONTINUE SHOPPING*************************
 function shopOrExit() {
   inquirer
     .prompt({
@@ -195,7 +223,7 @@ function shopOrExit() {
       message: "Would you like to continue shopping?",
       choices: ["Yes", "No"]
     })
-    .then (function (answer) {
+    .then(function (answer) {
       if (answer.shopOrExit === "Yes") {
         readProducts();
       } else {
@@ -204,4 +232,4 @@ function shopOrExit() {
       // Use user feedback for... whatever!!
     });
 }
-
+//END OF SHOP OR EXIT FUNCTION*************************************
